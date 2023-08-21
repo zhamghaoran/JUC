@@ -72,6 +72,7 @@ public static CompletableFuture<Void> runAsync(Runnable runnable,Executor execut
 ```
 
 #### runAsync 方法创建一个没有返回值的CompletableFuture
+
 - 第一个参数为一个Runnable 方法， 第二个参数可以传入自定义的线程池
 - 使用completableFuture执行Runnable 使用默认线程池 方法：
 
@@ -112,10 +113,13 @@ public class CompletableFutureDemo {
 ```
 
 #### 有返回值的CompletableFuture
+
 ```java
-public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier,Executor executor) {}
+public static<U> CompletableFuture<U> supplyAsync(Supplier<U> supplier,Executor executor){}
 ```
+
 同理这里还是有两种方式可以创建CompletableFuture，一种是自定义线程池，一种是使用默认的线程池
+
 ```java
 public class CompletableFutureDemo {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -128,7 +132,7 @@ public class CompletableFutureDemo {
                 throw new RuntimeException(e);
             }
             return "hello supplyAsync";
-        },threadPool);
+        }, threadPool);
         System.out.println(completableFuture.get());
         threadPool.shutdown();
     }
@@ -137,6 +141,9 @@ public class CompletableFutureDemo {
 
 #### CompletableFuture为什么比Future强大
 
+- 异步结束时，会自动回调某个对象的方法
+- 主线程设置好回调之后，不再关心异步任务的执行，异步任务可以按照顺序执行
+- 异步任务出错的时候会自动回调某个对象的方法
 
 
 

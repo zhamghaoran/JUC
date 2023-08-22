@@ -31,12 +31,9 @@ public class CompletableFutureUseDemo {
             System.out.println(Thread.currentThread().getName() + "----- 先去忙其他的");
             TimeUnit.SECONDS.sleep(3);
         } catch (Exception e) {
-
         } finally {
             threadPool.shutdownNow();
         }
-
-
     }
 
     private static void method1() throws ExecutionException, InterruptedException {

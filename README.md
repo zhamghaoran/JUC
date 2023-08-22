@@ -144,7 +144,46 @@ public class CompletableFutureDemo {
 - 异步结束时，会自动回调某个对象的方法
 - 主线程设置好回调之后，不再关心异步任务的执行，异步任务可以按照顺序执行
 - 异步任务出错的时候会自动回调某个对象的方法
+#### CompletableFuture 链式调用
+```java
+public class CompletableFutureUseDemo {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        // 使用自定义的线程池
+        ExecutorService threadPool = Executors.newFixedThreadPool(3);
+        try {
+            // 开启一个异步调用
+            CompletableFuture.supplyAsync(() -> {
+                System.out.println(Thread.currentThread().getName() + "----- come in");
+                int res = ThreadLocalRandom.current().nextInt(10);
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.println("-----------一秒钟后出结果" + res);
+                return res;
+                // 上一个任务结束之后，继续完成后面的任务 v是上个任务的返回值，e上个任务中抛出的异常
+            }, threadPool).whenComplete((v, e) -> {
+                if (e == null) {
+                    System.out.println("----------- 计算完成，更新系统Update:" + v);
+                }
+                // 创建一个异常处理方法
+            }).exceptionally(e -> {
+                e.printStackTrace();
+                System.out.println("异常情况：" + e.getCause() + e.getMessage());
+                return null;
+            });
+            System.out.println(Thread.currentThread().getName() + "----- 先去忙其他的");
+            TimeUnit.SECONDS.sleep(3);
+        } catch (Exception e) {
+        } finally {
+            // 使用结束之后关闭资源
+            threadPool.shutdownNow();
+        }
+    }
 
+}
+```
 
 
 

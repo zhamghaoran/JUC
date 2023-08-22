@@ -144,7 +144,9 @@ public class CompletableFutureDemo {
 - 异步结束时，会自动回调某个对象的方法
 - 主线程设置好回调之后，不再关心异步任务的执行，异步任务可以按照顺序执行
 - 异步任务出错的时候会自动回调某个对象的方法
+
 #### CompletableFuture 链式调用
+
 ```java
 public class CompletableFutureUseDemo {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
@@ -184,6 +186,99 @@ public class CompletableFutureUseDemo {
 
 }
 ```
+
+#### CompletableFuture Mall 实战
+
+```java
+public class CompletableFutureMall {
+    // 创建几个电商
+    static List<NetMall> list = Arrays.asList(
+            new NetMall("jd"),
+            new NetMall("dangdang"),
+            new NetMall("taobao")
+    );
+
+    // 运用传统的串行方法调用方法
+    public static List<String> getPrice(List<NetMall> list, String productName) {
+        return list
+                .stream()
+                .map(netMall ->
+                        String.format(productName + " in %s + price: + %.2f",
+                                netMall.getNetMallName(),
+                                netMall.calcPrice(productName)))
+                .toList();
+
+    }
+
+    // 使用CompletableFuture来异步处理方法
+    public static List<String> getPriceByCompletableFuture(List<NetMall> list, String productName) {
+        return list
+                .stream()
+                .map(netMall ->
+                        CompletableFuture.supplyAsync(() ->
+                                String.format(productName + " in %s + price: + %.2f",
+                                        netMall.getNetMallName(),
+                                        netMall.calcPrice(productName))))
+                .toList()
+                .stream()
+                .map(CompletableFuture::join)
+                .toList();
+
+    }
+
+    public static void main(String[] args) {
+//        long startTime = System.currentTimeMillis();
+//        getPrice(list, "mysql").forEach(System.out::println);
+//        long endTime = System.currentTimeMillis();
+//        System.out.println(endTime - startTime);
+
+        long startTime = System.currentTimeMillis();
+        getPriceByCompletableFuture(list, "mysql").forEach(System.out::println);
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime - startTime);
+    }
+}
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+class NetMall {
+    private String netMallName;
+
+    public double calcPrice(String productName) {
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return ThreadLocalRandom.current().nextDouble() * 2 + productName.charAt(0);
+    }
+}
+```
+
+#### CompletableFuture 常用用法
+
+- 获得结果和触发计算
+  获取结果:
+  ```java
+    public T get() {}
+    public T get(long timeout,TimeUnit unit) {} 
+    public T join() {}
+    // 如果在调用getNow 方法的时候还没有完成计算，那么就会返回valueIfAbsent的值，如果计算完成了就返回计算结果
+    public T getNow(T valueifAbsent) {}
+  ```
+  触发计算:
+  ```java
+  // 如果没有完成计算，就用value作为get() 的返回值
+  public boolean complete(T value){}
+  ```
+- 对计算结果进行合并
+  ```java
+    
+  ```
+- 对计算结果进行消费
+- 对计算结果进行选用
+- 对计算结果进行选用
 
 
 

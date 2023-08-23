@@ -274,9 +274,18 @@ class NetMall {
   ```
 - 对计算结果进行合并
   ```java
+     //接受上一步传入的参数，进行下一步的运算，第一个参数是上一步的结果，再返回一个值
+     public <U> CompletableFuture<U> thenApply(Function<? super T,? extends U> fn) {}
+    // 一旦在执行过程当中出现异常，就会跳到这个方法
+     public CompletableFuture<T> exceptionally(Function<Throwable, ? extends T> fn) {
     
   ```
 - 对计算结果进行消费
+接受任务的处理结果，并消费处理，无返回结果
+```java
+// 没有返回值，传入上一步的结果
+ public CompletableFuture<Void> thenAccept(Consumer<? super T> action) {}
+```
 - 对计算结果进行选用
 - 对计算结果进行选用
 

@@ -1,4 +1,4 @@
-package org.jjking;
+package org.jjking.future;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;

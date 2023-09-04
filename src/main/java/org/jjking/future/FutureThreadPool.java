@@ -1,4 +1,4 @@
-package org.jjking;
+package org.jjking.future;
 
 import java.beans.beancontext.BeanContext;
 import java.util.concurrent.*;

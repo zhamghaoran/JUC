@@ -1,16 +1,14 @@
-package org.jjking;
+package org.jjking.future;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
-import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class CompletableFutureMall {
     static List<NetMall> list = Arrays.asList(

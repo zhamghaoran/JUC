@@ -288,6 +288,39 @@ class NetMall {
 ```
 - 对计算结果进行选用
 - 对计算结果进行选用
+```java
+public class CompletableFutureFast {
+    public static void main(String[] args) {
+        // 先开启第一个任务
+        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
+            System.out.println("a come in");
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return "play1";
+        });
+        // 再开启第二个任务
+        CompletableFuture<String> completableFuture1 = CompletableFuture.supplyAsync(() -> {
+            System.out.println("b come in");
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return "play2";
+        });
+        // 从两个任务当中选取快的一个
+        CompletableFuture<String> completableFuture2 = completableFuture1.applyToEither(completableFuture, (f) -> {
+            return f + "is winner";
+        });
+        输出结果
+        System.out.println(completableFuture2.join());
+    }
+}
+
+```
 
 
 

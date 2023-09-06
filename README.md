@@ -446,6 +446,29 @@ public class CompletableFutureCombineDemo {
 
 ### 可重入锁
 
+是指在同一个线程的外层方法获取锁的时候，再进入该线程的内层方法会自动获取锁(前提，锁对象是同一个对象)，不会因为之前已经获取过还没释放而阻塞。
+
+如果一个有synchronized 修饰的递归调用方法，程序第二次进入被自己阻塞了岂不是天大的笑话，出现了作茧自缚。
+
+所以java中ReentryLock和synchronized  都是可重入锁，可重入锁的一个优点是可一定程度避免死锁。
+
+- synchronized  是可重入锁
+- ReentryLock 是可重入锁
+
+### 死锁产生的原因
+
+- 系统资源不足
+- 进程运行推进的顺序不合适
+- 资源分配不当
+
+如何排查死锁 
+方法一
+- 先使用jsp -l 查看java 进程
+- 再使用 jstack 进程编号  获得详细信息
+
+方法二
+- 使用jconsole 查看java控制台
+
 ### 死锁(独占锁)/读锁(共享锁)
 
 ### 自旋锁SpinLock

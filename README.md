@@ -521,3 +521,19 @@ public class CompletableFutureCombineDemo {
 - 注意：sleep 方法抛出InterruptException后，中断标识也被清空为false，我们在catch没有通过调用th.interrupt() 方法再次将中断标识置为true，这就会导致无限循环
 
 中断只是一种协商机制，并不会直接打断线程
+
+Thread.interrupt() :  判断线程是否被中断并清除当前中断状态
+
+这个方法做了两件事：
+
+- 返回当前线程的中断状态，测试当前线程是否已被中断
+
+- 将当前线程的中断状态清零并重新设为false，清除当前线程的中断状态
+
+  此方法有点不好理解， 如果连续两次调用此方法，则第二次调用将返回false，因为连续两次调用的结果可能不一样
+
+```java
+Thread.interrupted(); // 返回是否被Interrupt 并且把Interrupt 置为false
+Thread.currentThread().isInterrupted();  // 返回是否被Interrupt
+```
+

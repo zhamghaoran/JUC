@@ -15,6 +15,10 @@ public class Main {
         t1.start();
         System.out.println(futureTask.get());
     }
+
+    public static String add(String a, String b) {
+        return a + b;
+    }
 }
 
 class Mythread implements Callable<String> {

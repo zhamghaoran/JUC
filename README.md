@@ -512,4 +512,12 @@ public class CompletableFutureCombineDemo {
 
 通过调用线程对象的interrupt 方法将该线程的标识位设为true 可以在别的线程中调用，也可以在自己的线程中调用。
 
+###  如何停止中断运行中的线程
 
+- 通过一个volatile 变量实现
+- 通过AtomicBoolean 
+- 通过Thread类自带的中断api实例方法实现
+
+- 注意：sleep 方法抛出InterruptException后，中断标识也被清空为false，我们在catch没有通过调用th.interrupt() 方法再次将中断标识置为true，这就会导致无限循环
+
+中断只是一种协商机制，并不会直接打断线程

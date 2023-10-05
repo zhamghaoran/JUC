@@ -537,3 +537,102 @@ Thread.interrupted(); // 返回是否被Interrupt 并且把Interrupt 置为false
 Thread.currentThread().isInterrupted();  // 返回是否被Interrupt
 ```
 
+### LockSupport
+
+- 唤醒线程的方法
+
+  - 使用Object中的wait()方法让线程等待，使用Object中的notify()方法唤醒线程
+
+  - 使用JUC包中Condition的await()方法让线程等待，使用signal()方法唤醒线程
+
+  - 使用LockSupport 类可以阻塞当前线程以及唤醒指定被阻塞的线程
+
+
+
+- LockSupport  是一个线程阻塞的工具类，所有的方法都是静态方法，可以让线程在任意位置阻塞， 阻塞之后也有对应的唤醒方法，。归根结底，LockSupport调用的Unsafe中的native代码
+- LockSupport提供park() 和 unpark() 方法实现阻塞线程和解除线程阻塞的过程
+- LockSupport和每个使用它的线程都有一个许可(permit)关联
+- 每个线程都有一个相关的permit，permit最多只有一个，重复调用unpark也不会累计凭证
+
+
+
+## JMM
+
+用途：来屏蔽掉硬件和操作系统的内存访问差异
+
+### 可见性
+
+是指当一个线程修改了某一个共享变量的值，其他线程是否可以立即知道变更，JMM规定了所有的变量都存储在主内存当中
+
+### 原子性
+
+ 
+
+### 有序性
+
+
+
+ ## happens-before
+
+​	如果一个操作happens-before 另一个操作，那么第一个操作的执行结果将对第二个操作可见。
+
+而且另一个操作的执行顺序在第二个操作之前
+
+​	两个操作之间存在happens-before关系，并不意味着一定要按照happens-before 原则指定的顺序来执行。
+
+如果重排序之后的执行结果与按照happens-before关系执行的结果一致，那么这种重排序并不非法
+
+
+
+### volatile 
+
+- 当写一个volatile变量的时候，JMM会把该线程对应的本地内存中的共享变量位置立即刷新到主内存当中
+
+- 当读一个volatile变量的时候，JMM会把该线程对应的本地内存设置成无效，重新回到主内存当中读取最新共享变量
+
+  所以volatile 的内存语义就是直接刷新到主内存当中，读的语义是直接从主内存当中读取。
+
+volatile的实现： 内存屏障
+
+### 内存屏障
+
+内存屏障(也称内存栅栏，屏蔽指令等，是一类同步屏障指令)，是CPU或编译器在对内存随机访问的操作中的一个同步点，使得此点之前的读写操作都执行后才可以执行此点之后的操作，避免代码排序。 内存屏障，其实就是一种JVM指令，Java内存模型的重排都会要求java编译器在生成JVM指令时插入特定的内存屏障指令，通过这些指令，volatile实现了Java内存模型当中的可见性和有序性，但volatile无法保证原子性。
+
+- 内存屏障之前的所有操作都要写回到主内存
+- 内存屏障之后的所有操作都获得内存屏障之前的所有操作的最新结果(实现了可见性)
+
+
+
+```java
+public class VolatileSeeDemo {
+    // 这里的flag必须要使用volatile修饰，不然的话main线程修改了flag之后，另一个线程无法获取到最新的结果
+    static volatile boolean flag = true;
+
+    public static void main(String[] args) {
+        new Thread(() -> {
+            System.out.println(Thread.currentThread().getName() + "   come in");
+            while (flag) {
+            }
+            System.out.println(Thread.currentThread().getName() + "   flag 被设置为false 程序截止");
+        }).start();
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        flag = false;
+        System.out.println(Thread.currentThread().getName() + "   main线程修改完成");
+    }
+}
+```
+
+线程t1为何看不到主线程main修改为false的flag的值
+
+问题可能：
+
+- 主线程修改了flag的值之后没有及时的刷新到主内存，所以t1线程看不到 
+- 主线程将flag刷新到主内存，但是t1一直读取的是自己工作内存中的flag的值，没有去主内存中更新获取flag最新的值
+
+volatile 不具备原子性，因为i++的操作会被分解成三个操作（数据读取，数据计算，数据赋值）
+
+jvm只是保证从主内存加载到工作内存的值是最新的，也仅仅是数据加载是最新的。但是多线程环境下，数据计算和数据赋值的操作可能出现多次，所以volatile修饰的对象不具有原子性。

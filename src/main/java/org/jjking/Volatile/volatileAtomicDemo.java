@@ -2,6 +2,7 @@ package org.jjking.Volatile;
 
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 class Mynumber {
     volatile int number;

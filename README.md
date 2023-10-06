@@ -636,3 +636,53 @@ public class VolatileSeeDemo {
 volatile 不具备原子性，因为i++的操作会被分解成三个操作（数据读取，数据计算，数据赋值）
 
 jvm只是保证从主内存加载到工作内存的值是最新的，也仅仅是数据加载是最新的。但是多线程环境下，数据计算和数据赋值的操作可能出现多次，所以volatile修饰的对象不具有原子性。
+
+### volatile 最佳实践
+
+- 单一赋值可以，但是含复合运算赋值不可以(i ++)
+- 状态标志，判断业务是否结束
+- 开销较低的读，写锁策略(读多写少，写方法加上synchronized，读变量加上volatile)
+- DCL双端锁的发布 ( 单例模式)
+
+### volatile 关键字保证可见性：
+
+- 对一个被volatile关键字修改的变量
+  1. 写操作的话，这个变量的嘴形式会立志刷新到主内存当中
+  2. 读操作的话，总是能够读取到这个变量的最新值，也就是这个变量最后被修改的值
+  3. 当某个线程收到通知，去读取volatile 修饰的变量的值的时候，线程私有工作内存的数据失效，需要重新返回到主内存中去读取最新的数据
+
+### 禁重排
+
+- 写指令
+
+  - StoreStore屏障
+
+    禁止上面的普通写和下面的volatile写操作重排序前面所有的普通写的操作，数据都已经刷新到主内存，普通写和volatile写禁止重排序，volatile写和vilatile写禁止重排序
+
+  - StoreLoad屏障
+
+    禁止上面的volatile写和下面的volatile读/写或普通写操作重排序 前面volatile 写的操作，数据都已经刷新到主内存 volatile和普通写禁止重排，volatile写和volatile读/写 禁止重排
+
+- 读指令
+
+  - LoadLoad屏障
+
+    禁止下面的普通读，volatile读和上面的volatile读重排序 volatile读和普通读禁止重排序 volatile读和普通volatile读禁止重排序
+
+  - LoadStore屏障
+
+    禁止上面的volatile读和下面的volatile写或普通写重排序 volatile 读和普通写禁止重排； volatile 读和普通volatile 写禁止重排
+
+  volatile写之前的操作，都禁止重排序到volatile之后
+  
+  volatile读之后的操作，都禁止重排序到volatile之前
+  
+  volatile写之后volatile读，禁止重排序
+
+
+
+​    
+
+​    
+
+​    
